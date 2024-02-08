@@ -225,60 +225,42 @@ upd x = x * (-1)
 
 
 treeConstruction :: String -> Tree Char
-treeConstruction "" = undefined
--- treeConstruction word@(x:xs)
---     | x /= '^' =  handlerFunction (helperFunction xs y y)  ((fiveFunction (helperFunction xs y y))!!0) 
---     | otherwise = [Nil]
---     where 
---         y = TreeNode Nil x Nil
+treeConstruction "" = Nil
+treeConstruction (x:[]) = TreeNode Nil x Nil
+treeConstruction (x:xs) = if checkCaret (x:xs) then Nil else tfunction (x:xs)
 
 
-helperFunction :: String -> Tree Char -> Tree Char -> [Tree Char]
-helperFunction "" root parent = [parent]
-helperFunction word@(x:[]) root parent = [parent]
-helperFunction word@(x:y:xs) root parent@(TreeNode left current right)
-    | x /= '^' = [parent] ++ helperFunction (y:xs) root (TreeNode (addnodl x left) current right)
-    | otherwise = [parent] ++ [Nil] ++ helperFunction xs root (addnodr y right)
+checkCaret :: String -> Bool
+checkCaret word@(x:y:xs) = if x == '^' || y == '^' then True else False 
 
 
+tfunction :: String -> Tree Char
+tfunction "" = Nil
+tfunction (x:xs) 
+    |   leftnode (xs) /= Nil && rightnode (xs) /= Nil = TreeNode (leftnode (xs)) x (rightnode (xs))
+    |   rightnode (xs) /= Nil = TreeNode Nil x (rightnode (xs))
+    |   leftnode (xs) /= Nil = TreeNode (leftnode (xs)) x Nil
 
-fiveFunction :: [Tree Char] -> [Tree Char]
-fiveFunction []  = []
-fiveFunction (x:[])
-    | x /= Nil = [x]
-    | otherwise = []
-fiveFunction (x:y:xs)  
-    | y == Nil = [x,y] ++ fiveFunction xs
-    | otherwise = fiveFunction (y:xs)
+leftnode :: String -> Tree Char
+leftnode "" = Nil
+leftnode (x:xs) = if x /= '^' then TreeNode (leftnode xs) x (rightnode xs) else Nil
 
-
-
-handlerFunction :: [Tree Char] -> Tree Char -> [Tree Char]
-handlerFunction [] x = [x]
-handlerFunction list@(x:y:xs) node@(TreeNode left current right) = list
-
-
-findNil :: [Tree Char] -> (Int,Tree Char)
-findNil list@(x:xs)
-    | x == Nil = addtuple (1,Nil) (findNil xs)
-    | otherwise = (0,x)
-
-addtuple :: (Int,Tree Char) -> (Int,Tree Char) -> (Int,Tree Char)
-addtuple (num1,node1) (num2,node2) = (num1 + num2, node2)
--- now how do I use this list to make a tree 
-
--- connectNode :: Tree Char -> Tree Char -> Int
+rightnode :: String -> Tree Char
+rightnode "" = Nil
+rightnode word@(x:xs) = if possible then TreeNode (leftnode nextlist) (word!!((rightnodecharcount word)*2)) (rightnode nextlist) else Nil
+    where
+        possible = ((rightnodecharcount word) == (rightnodecaretcount  (drop (rightnodecharcount word) word)))
+        nextlist = (drop (((rightnodecharcount word)*2)+1) word)
 
 
 
--- h5unction :: Tree Char  -> [Int] -> String -> Tree Char
--- h5unction Nil _ _ = Nil
--- h5unction x _ "" = x 
--- h5unction node@(TreeNode left current right) _ (x:[]) = if x /= '^' then addnodl x node else node
--- h5unction node@(TreeNode left current right) i word@(x:y:xs) = if checkchr x  /= Nil 
---     then h5unction (TreeNode (addnodl x left) current right) (i ++ [-1]) (y:xs) 
---     else h5unction (TreeNode left current (addnodr y right)) (i ++ [1]) xs 
+rightnodecharcount  :: String -> Int
+rightnodecharcount "" = 0
+rightnodecharcount (x:xs) = if x /= '^' then 1 + rightnodecharcount xs else 0
 
+rightnodecaretcount :: String -> Int
+rightnodecaretcount "" = 0
+rightnodecaretcount (x:xs) = if x == '^' then 1 + rightnodecaretcount xs else 0
 
 addnodr :: Char  -> Tree Char -> Tree Char
 addnodr ' ' _ = Nil
@@ -297,16 +279,6 @@ addnodl x Nil = TreeNode Nil x Nil
 addnodl x node@(TreeNode left current right)
     | left == Nil = TreeNode (TreeNode Nil x Nil) current right
     | otherwise = TreeNode (addnodl x node) current right
-
--- checkchr :: Char -> Tree Char
--- checkchr x
---     | x == '^' = Nil
---     | otherwise = TreeNode Nil x Nil
-
-
---when I encounter a ^ character I will add to 
-
-
 
 
 
